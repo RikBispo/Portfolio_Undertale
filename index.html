@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Henrik Bispo // Undertale Portfolio</title>
+  <meta name="description" content="Portfólio de Henrik Bispo inspirado na temática de Undertale. Estudante de Inteligência Artificial na UNIVESP, ex-FATEC ASD e Técnico em Mecatrônica SENAI.">
+
+  <!-- Google Pixel Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="undertale-body">
+
+  <!-- Scanlines CRT Overlay -->
+  <div class="crt-lines"></div>
+
+  <!-- HEADER HUD -->
+  <header class="ut-header">
+    <div class="ut-header-container">
+      <div class="ut-brand" id="brand-trigger" title="Clique para ver fala de Undertale!">
+        <span class="soul-icon">❤️</span>
+        <span class="ut-logo-text">HENRIK_BISPO.EXE</span>
+      </div>
+
+      <div class="ut-hud-stats">
+        <span>LV 99</span>
+        <div class="hp-bar-container">
+          <span class="hp-label">HP</span>
+          <div class="hp-bar"><div class="hp-fill" id="hud-hp-fill" style="width: 100%;"></div></div>
+          <span class="hp-text"><span id="hud-hp-val">99</span> / 99</span>
+        </div>
+      </div>
+
+      <div class="ut-controls">
+        <button id="btn-audio" class="ut-btn-small" title="Alternar Som 8-bit">
+          <span class="material-symbols-outlined" id="audio-icon">volume_up</span> 
+          <span id="audio-status">SFX: ON</span>
+        </button>
+        <button id="btn-battle-mode" class="ut-btn-small highlight pulse-btn" title="Entrar na Batalha Real de Undertale!">
+          ⚔️ INICIAR BATALHA UNDERTALE
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="ut-main-container">
+
+    <!-- INTRO / HERO SECTION -->
+    <section id="hero" class="ut-box hero-box">
+      <div class="ut-dialog-layout">
+        <div class="avatar-frame">
+          <div class="pixel-avatar" id="avatar-clicker" title="Clique para interagir com Henrik!">
+            <span class="avatar-soul">❤️</span>
+            <div class="avatar-tag">HENRIK</div>
+          </div>
+        </div>
+
+        <div class="dialog-content">
+          <div class="dialog-speaker">* HENRIK BISPO</div>
+          <div class="dialog-text-box">
+            <p id="hero-typewriter-text" class="typewriter-text">
+              * Saudações, viajante! Eu sou o Henrik.<br>
+              * Estudante de Bacharelado em Inteligência Artificial (UNIVESP), Ex-FATEC ASD e Técnico em Mecatrônica pelo SENAI.<br>
+              <span class="text-yellow">* ERROR 404: Cargo atual não encontrado...</span><br>
+              * Mas o repositório está 100% configurado e pronto para rodar o primeiro commit oficial na sua empresa!
+            </p>
+          </div>
+          <div class="hero-actions">
+            <a href="#projetos" class="ut-btn-action">
+              <span>🌟 VER PROJETOS</span>
+            </a>
+            <a href="#contato" class="ut-btn-action yellow">
+              <span>💌 ENTRAR EM CONTATO</span>
+            </a>
+            <button id="btn-interact-hero" class="ut-btn-action text-cyan">
+              <span>💬 OUVIR CONSELHO</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLOATING DIALOG POPUP (EASTER EGG) -->
+    <div id="ut-popup-dialog" class="ut-box ut-popup-box hidden">
+      <div class="popup-header">
+        <span class="text-yellow">* DIÁLOGO DE UNDERTALE</span>
+        <button id="close-popup" class="popup-close-btn">✕</button>
+      </div>
+      <p id="popup-text">* (Você sentiu seus bugs rastejando pelas suas costas...)</p>
+    </div>
+
+    <!-- NAVIGATION BUTTONS -->
+    <nav class="ut-nav-bar">
+      <a href="#historia" class="ut-nav-btn active">
+        <span class="nav-soul">❤️</span> [ 📜 HISTÓRIA ]
+      </a>
+      <a href="#skills" class="ut-nav-btn">
+        <span class="nav-soul">❤️</span> [ ⚔️ STATS & SKILLS ]
+      </a>
+      <a href="#trabalhos" class="ut-nav-btn">
+        <span class="nav-soul">❤️</span> [ 🛡️ TRABALHOS ]
+      </a>
+      <a href="#projetos" class="ut-nav-btn">
+        <span class="nav-soul">❤️</span> [ 🌟 PROJETOS ]
+      </a>
+      <a href="#contato" class="ut-nav-btn">
+        <span class="nav-soul">❤️</span> [ 💛 CONTATO ]
+      </a>
+    </nav>
+
+    <!-- SAVE POINT BANNER -->
+    <div class="save-point-banner" id="save-point-trigger" style="cursor: pointer;" title="Clique para salvar seu progresso!">
+      <span class="save-star animate-pulse">🌟</span>
+      <div class="save-text">
+        * Saber que Henrik está preparado com Inteligência Artificial, Python, Mecatrônica e C para assumir novos desafios te enche de <span class="text-red">DETERMINAÇÃO</span>. <span class="save-hint text-yellow">(Clique para Salvar!)</span>
+      </div>
+    </div>
+
+    <!-- SECTION 1: HISTÓRIA // TIMELINE -->
+    <section id="historia" class="ut-section">
+      <div class="ut-box-header">
+        <h2 class="ut-title"><span class="text-yellow">📜 HISTÓRIA // LOG_01</span></h2>
+        <span class="ut-subtitle">* A jornada do herói no mundo da tecnologia</span>
+      </div>
+
+      <div class="ut-timeline">
+        
+        <!-- LOG 1 -->
+        <div class="ut-box ut-timeline-card" data-dialog="* Desde pequeno, Henrik fantasiasva em construir robôs por causa de Five Nights at Freddy's!">
+          <div class="card-header">
+            <span class="card-icon">🕹️</span>
+            <h3 class="card-title">[SYS_LOG // INICIALIZAÇÃO E FASCÍNIO]</h3>
+          </div>
+          <div class="card-body">
+            <p>
+              * Desde pequeno, a tecnologia sempre me encantou. A atmosfera de jogos como <strong>Five Nights at Freddy's (FNAF)</strong> e jogos com universos misteriosos acendeu em mim o desejo de entender sistemas, automação e lógica de programação. O que começou como fantasias de infância de construir robôs virou minha vocação profissional.
+            </p>
+          </div>
+        </div>
+
+        <!-- LOG 2 -->
+        <div class="ut-box ut-timeline-card" data-dialog="* O SENAI me deu 2 anos de pura prática em Mecatrônica, circuitos e microcontroladores!">
+          <div class="card-header">
+            <span class="card-icon">⚡</span>
+            <h3 class="card-title">[SENAI // MECATRÔNICA - 2 ANOS]</h3>
+          </div>
+          <div class="card-body">
+            <p>
+              * Cursar 2 anos de <strong>Mecatrônica no SENAI</strong> transformou a visão abstrata em prática real. Adquiri uma base sólida em hardware, sensores industriais, microcontroladores, lógica de circuitos e desenvolvimento de software integrado à automação.
+            </p>
+          </div>
+        </div>
+
+        <!-- LOG 3 -->
+        <div class="ut-box ut-timeline-card" data-dialog="* Na UNIVESP, me aprofundo em Machine Learning e Inteligência Artificial!">
+          <div class="card-header">
+            <span class="card-icon">🎓</span>
+            <h3 class="card-title">[DE FATEC A UNIVESP // INTELIGÊNCIA ARTIFICIAL]</h3>
+          </div>
+          <div class="card-body">
+            <p>
+              * Cursei 6 meses de <strong>Análise e Desenvolvimento de Sistemas (ADS) na FATEC</strong>, onde participei da maratona de programação <em>Interfatecs</em> e de projetos de impacto social. Visando especialização em algoritmos modernos, migrei para o <strong>Bacharelado em Inteligência Artificial na UNIVESP</strong>, aprofundando Machine Learning, ciência de dados e engenharia de software.
+            </p>
+          </div>
+        </div>
+
+        <!-- LOG 4 -->
+        <div class="ut-box ut-timeline-card status-card" data-dialog="* ERROR 404: Cargo atual não encontrado. Esperando seu convite!">
+          <div class="card-header">
+            <span class="card-icon text-red">⚠️</span>
+            <h3 class="card-title text-red">[STATUS ATUAL // PRONTO PARA DEPLOY]</h3>
+          </div>
+          <div class="card-body">
+            <p>
+              * <strong class="text-red">ERROR 404: Cargo atual não encontrado.</strong><br>
+              * O ambiente de desenvolvimento está 100% configurado, testado e aguardando apenas o seu comando para entrar em produção na sua equipe!
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 2: STATS & SKILLS -->
+    <section id="skills" class="ut-section">
+      <div class="ut-box-header">
+        <h2 class="ut-title"><span class="text-yellow">⚔️ STATS & ATRIBUTOS DE BATALHA</span></h2>
+        <span class="ut-subtitle">* Equipamentos e habilidades aprendidas na jornada</span>
+      </div>
+
+      <div class="ut-skills-grid">
+        <div class="ut-box skill-card">
+          <div class="skill-head">
+            <span class="skill-icon">🧠</span>
+            <h4>INTELIGÊNCIA ARTIFICIAL & ML</h4>
+          </div>
+          <p>Modelos preditivos, Machine Learning, análise de dados e algoritmos inteligentes (UNIVESP).</p>
+          <div class="stat-bar"><div class="stat-fill" style="width: 90%;"></div></div>
+        </div>
+
+        <div class="ut-box skill-card">
+          <div class="skill-head">
+            <span class="skill-icon">🐍</span>
+            <h4>PYTHON & LINGUAGEM C</h4>
+          </div>
+          <p>Raciocínio lógico estruturado, algoritmos de maratona (Interfatecs) e automação de scripts.</p>
+          <div class="stat-bar"><div class="stat-fill" style="width: 88%;"></div></div>
+        </div>
+
+        <div class="ut-box skill-card">
+          <div class="skill-head">
+            <span class="skill-icon">📊</span>
+            <h4>POWER BI & ANÁLISE DE DADOS</h4>
+          </div>
+          <p>Criação de dashboards gerenciais, acompanhamento de KPIs, RNCs e métricas financeiras.</p>
+          <div class="stat-bar"><div class="stat-fill" style="width: 92%;"></div></div>
+        </div>
+
+        <div class="ut-box skill-card">
+          <div class="skill-head">
+            <span class="skill-icon">🤖</span>
+            <h4>MECATRÔNICA & SENSORES</h4>
+          </div>
+          <p>Microcontroladores, automação industrial, hardware e integração com software (SENAI).</p>
+          <div class="stat-bar"><div class="stat-fill" style="width: 85%;"></div></div>
+        </div>
+
+        <div class="ut-box skill-card">
+          <div class="skill-head">
+            <span class="skill-icon">🌐</span>
+            <h4>DESENVOLVIMENTO WEB & C#</h4>
+          </div>
+          <p>Sistemas em C#, React/HTML/CSS, landing pages responsivas e documentação técnica.</p>
+          <div class="stat-bar"><div class="stat-fill" style="width: 87%;"></div></div>
+        </div>
+
+        <div class="ut-box skill-card">
+          <div class="skill-head">
+            <span class="skill-icon">🤝</span>
+            <h4>IMPACTO SOCIAL & EQUIPE</h4>
+          </div>
+          <p>Trabalho em equipe sob pressão, desenvolvimento de projetos sociais e resolução de problemas.</p>
+          <div class="stat-bar"><div class="stat-fill" style="width: 95%;"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: TRABALHOS -->
+    <section id="trabalhos" class="ut-section">
+      <div class="ut-box-header">
+        <h2 class="ut-title"><span class="text-yellow">🛡️ TRABALHOS DE TERCEIROS</span></h2>
+        <span class="ut-subtitle">* Dashboards e sistemas empresariais desenvolvidos</span>
+      </div>
+
+      <div class="ut-projects-container">
+        
+        <!-- DASHBOARD 1 -->
+        <div class="ut-box work-item">
+          <div class="work-badge encrypted">🔒 CONFIDENCIAL</div>
+          <h3 class="work-title">Dashboards BOOKS / NOI's</h3>
+          <p class="work-desc">
+            * Dashboard desenvolvido para o acompanhamento completo de documentações de peças petrolíferas no setor de Petróleo & Gás. Permite visualizar taxas de erros documentais e mapear quais falhas foram mais recorrentes para mitigação.
+          </p>
+          <div class="work-tags">
+            <span class="tag">POWER BI</span>
+            <span class="tag">PETRÓLEO & GÁS</span>
+            <span class="tag">ANÁLISE DE DADOS</span>
+          </div>
+        </div>
+
+        <!-- DASHBOARD 2 -->
+        <div class="ut-box work-item">
+          <div class="work-badge archived">📦 ARQUIVADO</div>
+          <h3 class="work-title">Dashboard RNC (Relatório de Não Conformidade)</h3>
+          <p class="work-desc">
+            * Sistema de monitoramento de Relatórios de Não Conformidade (RNC). Transforma tabelas brutas e complexas em painéis executivos claros com métricas acionáveis para controle de qualidade.
+          </p>
+          <div class="work-tags">
+            <span class="tag">POWER BI</span>
+            <span class="tag">GESTÃO DE QUALIDADE</span>
+            <span class="tag">MÉTRICAS</span>
+          </div>
+        </div>
+
+        <!-- DASHBOARD 3 -->
+        <div class="ut-box work-item">
+          <div class="work-badge restricted">📈 FINANCEIRO</div>
+          <h3 class="work-title">Dashboard Financeiro Empresarial</h3>
+          <p class="work-desc">
+            * Painel desenvolvido para análise de faturamento corporativo, mensuração de KPIs estratégicos e projeção da evolução financeira mensal da empresa.
+          </p>
+          <div class="work-tags">
+            <span class="tag">POWER BI</span>
+            <span class="tag">FINANÇAS</span>
+            <span class="tag">KPIS</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 4: PROJETOS -->
+    <section id="projetos" class="ut-section">
+      <div class="ut-box-header">
+        <h2 class="ut-title"><span class="text-yellow">🌟 PROJETOS & COMPETIÇÕES</span></h2>
+        <span class="ut-subtitle">* Maratonas de programação e soluções de código abertas</span>
+      </div>
+
+      <div class="ut-projects-grid">
+        
+        <!-- PROJETO 1 -->
+        <div class="ut-box project-card">
+          <div class="project-header">
+            <span class="project-icon">🏆</span>
+            <h3>INTERFATECS - Maratona C</h3>
+          </div>
+          <p class="project-body">
+            * Participante do Interfatecs (Maratona de Programação) com a equipe <strong>PHP.atos</strong>. Classificação e avanço até a 2ª etapa nacional exercitando algoritmos avançados e raciocínio lógico em Linguagem C.
+          </p>
+          <div class="project-footer">
+            <span class="tag text-yellow">LINGUAGEM C</span>
+            <span class="tag">MARATONA</span>
+            <span class="tag">LÓGICA</span>
+          </div>
+        </div>
+
+        <!-- PROJETO 2 -->
+        <div class="ut-box project-card highlight-border">
+          <div class="project-header">
+            <span class="project-icon">💅</span>
+            <h3>Carolunhas Landing Page</h3>
+          </div>
+          <p class="project-body">
+            * Landing Page desenvolvida para um empreendimento de beleza, expandindo a presença digital da cliente e otimizando a captação e agendamento de clientes online.
+          </p>
+          <div class="project-footer space-between">
+            <div class="tag-list">
+              <span class="tag">WEB DESIGN</span>
+              <span class="tag">RENDER</span>
+            </div>
+            <a href="https://carolunhas.onrender.com" target="_blank" rel="noopener noreferrer" class="ut-link-btn">
+              🔗 Visitar Site
+            </a>
+          </div>
+        </div>
+
+        <!-- PROJETO 3 -->
+        <div class="ut-box project-card">
+          <div class="project-header">
+            <span class="project-icon">🏛️</span>
+            <h3>Patrimonial Management System</h3>
+          </div>
+          <p class="project-body">
+            * Projeto acadêmico na FATEC focado no desenvolvimento de um sistema de gestão de patrimônio. Atuação direta na documentação técnica, modelagem e estrutura de requisitos em C#.
+          </p>
+          <div class="project-footer">
+            <span class="tag">C#</span>
+            <span class="tag">DOCUMENTAÇÃO</span>
+            <span class="tag">FATEC</span>
+          </div>
+        </div>
+
+        <!-- PROJETO 4 -->
+        <div class="ut-box project-card">
+          <div class="project-header">
+            <span class="project-icon">🤝</span>
+            <h3>HAVANA - Gestão Social</h3>
+          </div>
+          <p class="project-body">
+            * Plataforma desenvolvida no Projeto Integrador para inclusão de jovens de escolas públicas em oficinas de esporte e cultura, com módulo de cadastro e gerador de carteirinhas de estudantes.
+          </p>
+          <div class="project-footer">
+            <span class="tag">IMPACTO SOCIAL</span>
+            <span class="tag">CADASTRO</span>
+            <span class="tag">I.D</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 5: CONTATO -->
+    <section id="contato" class="ut-section">
+      <div class="ut-box-header">
+        <h2 class="ut-title"><span class="text-yellow">💛 CONTATO // MENU ACT</span></h2>
+        <span class="ut-subtitle">* Escolha uma opção para entrar em contato com Henrik</span>
+      </div>
+
+      <div class="ut-box contact-box">
+        <div class="contact-layout">
+          <div class="act-options">
+            <div class="act-label">* MENU DE AÇÃO DE CONTATO:</div>
+            
+            <a href="https://www.linkedin.com/in/rikbispo" target="_blank" rel="noopener noreferrer" class="ut-act-btn">
+              <span>❤️ [ ACT 1: LINKEDIN ]</span>
+              <span class="act-subtext">linkedin.com/in/rikbispo</span>
+            </a>
+
+            <a href="https://github.com/RikBispo" target="_blank" rel="noopener noreferrer" class="ut-act-btn">
+              <span>❤️ [ ACT 2: GITHUB ]</span>
+              <span class="act-subtext">github.com/RikBispo</span>
+            </a>
+
+            <button id="btn-trigger-form" class="ut-act-btn highlight">
+              <span>❤️ [ ACT 3: ENVIAR MENSAGEM DIRETA ]</span>
+              <span class="act-subtext">Disparar formulário criptografado</span>
+            </button>
+          </div>
+
+          <div class="contact-form-container">
+            <form id="ut-contact-form" class="ut-form">
+              <div class="form-title">* TRANSMISSÃO DE MENSAGEM</div>
+
+              <div class="form-group">
+                <label for="form-name">* SEU NOME / RECRUTADOR:</label>
+                <input type="text" id="form-name" required placeholder="Ex: Toriel / Recrutador Tech">
+              </div>
+
+              <div class="form-group">
+                <label for="form-email">* SEU E-MAIL:</label>
+                <input type="email" id="form-email" required placeholder="seu.email@exemplo.com">
+              </div>
+
+              <div class="form-group">
+                <label for="form-msg">* MENSAGEM:</label>
+                <textarea id="form-msg" rows="4" required placeholder="Escreva sua proposta ou mensagem..."></textarea>
+              </div>
+
+              <div class="form-actions">
+                <span id="contact-status" class="status-msg">* Aguardando envio...</span>
+                <button type="submit" class="ut-btn-action yellow">
+                  <span>💌 TRANSMITIR</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       AUTHENTIC UNDERTALE BATTLE SCREEN (100% REPLICA OF THE ORIGINAL GAME)
+       ========================================================================== -->
+  <div id="battle-modal" class="battle-modal hidden">
+    <div class="battle-arena-wrapper">
+      
+      <!-- TOP ENEMY STAGE -->
+      <div class="enemy-section">
+        <div id="enemy-damage-float" class="enemy-damage-float hidden">-45</div>
+        <div class="speech-bubble-wrapper">
+          <div id="enemy-speech-bubble" class="speech-bubble">* Mostre-me seu código!</div>
+        </div>
+        <div class="enemy-sprite-container">
+          <div id="enemy-sprite" class="enemy-sprite animate-bounce">👾</div>
+          <div id="enemy-slice-effect" class="enemy-slice-effect hidden"></div>
+          <div class="enemy-name" id="enemy-name">JOB OFFER // RECRUTADOR TECH</div>
+          <div class="enemy-hp-bar"><div class="enemy-hp-fill" id="enemy-hp" style="width: 100%;"></div></div>
+        </div>
+      </div>
+
+      <!-- MAIN BATTLE BOX (DIALOGUE / TARGET / SUBMENU / ARENA) -->
+      <div id="battle-main-box" class="ut-box battle-dialog-box">
+        
+        <!-- PANE 1: DIALOGUE TEXT -->
+        <div id="pane-dialog" class="battle-pane">
+          <p id="battle-dialog-text">* Um recrutador tech exige ver seus projetos!</p>
+        </div>
+
+        <!-- PANE 2: FIGHT ATTACK TARGET GAUGE -->
+        <div id="pane-fight" class="battle-pane hidden">
+          <div class="target-bar-label">* PRESSIONE [ESPAÇO] OU [CLIQUE] PARA ATACAR!</div>
+          <div id="fight-gauge" class="fight-gauge">
+            <div class="fight-target-center"></div>
+            <div id="fight-bar-cursor" class="fight-bar-cursor"></div>
+          </div>
+        </div>
+
+        <!-- PANE 3: SUBMENU (ACT / ITEM / MERCY) -->
+        <div id="pane-submenu" class="battle-pane hidden">
+          <div id="submenu-options-list" class="submenu-options-list"></div>
+        </div>
+
+        <!-- PANE 4: BULLET HELL SOUL DODGE ARENA -->
+        <div id="pane-dodge" class="battle-pane hidden">
+          <div id="soul-arena" class="soul-arena">
+            <div id="dodge-soul" class="dodge-soul">❤️</div>
+          </div>
+          <div class="dodge-hud">
+            <span>ESQUIVE DOS BUGS! (SETAS / WASD / MOUSE)</span>
+            <span class="text-yellow">TEMPO: <span id="dodge-timer-val">5.0</span>s</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PLAYER STATUS BAR -->
+      <div class="player-battle-stats">
+        <span class="player-name">HENRIK</span>
+        <span>LV 99</span>
+        <div class="hp-bar-container">
+          <span class="hp-label">HP</span>
+          <div class="hp-bar"><div class="hp-fill" id="player-battle-hp" style="width: 100%;"></div></div>
+          <span class="hp-text"><span id="b-hp">99</span> / 99</span>
+        </div>
+      </div>
+
+      <!-- UNDERTALE BATTLE BUTTONS -->
+      <div class="battle-buttons-grid">
+        <button id="b-btn-fight" class="b-btn active" data-index="0">
+          <span class="b-soul">❤️</span> [ ⚔️ FIGHT ]
+        </button>
+        <button id="b-btn-act" class="b-btn" data-index="1">
+          <span class="b-soul">❤️</span> [ 💬 ACT ]
+        </button>
+        <button id="b-btn-item" class="b-btn" data-index="2">
+          <span class="b-soul">❤️</span> [ ☕ ITEM ]
+        </button>
+        <button id="b-btn-mercy" class="b-btn highlight" data-index="3">
+          <span class="b-soul">❤️</span> [ 💛 MERCY ]
+        </button>
+      </div>
+
+      <button id="btn-close-battle" class="close-battle-btn">✕ FECHAR BATALHA</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="ut-footer">
+    <div class="ut-footer-content">
+      <p>© 2005 - 2026 HENRIK BISPO --- UNDERTALE THEMED PORTFOLIO</p>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/rikbispo" target="_blank" rel="noopener noreferrer">[ LINKEDIN ]</a>
+        <a href="https://github.com/RikBispo" target="_blank" rel="noopener noreferrer">[ GITHUB ]</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
