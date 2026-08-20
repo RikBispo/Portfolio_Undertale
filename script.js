@@ -820,28 +820,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const stepPanel = document.getElementById('admin-step-panel');
 
   const btnGoogleLogin = document.getElementById('btn-google-login');
-  const btnVerify2FA = document.getElementById('btn-verify-2fa');
   const btnLogoutAdmin = document.getElementById('btn-logout-admin');
 
-  const input2FAPin = document.getElementById('admin-2fa-pin');
-  const userEmailDisplay = document.getElementById('user-email-display');
   const adminUserName = document.getElementById('admin-user-name');
   const adminStatusMsg = document.getElementById('admin-status-msg');
   const formAddProject = document.getElementById('form-add-project');
 
   let authenticatedUser = null;
-  let is2FAPassed = false;
-  // PIN de segurança padrão de 2 Etapas (Pode ser alterado)
-  const ADMIN_2FA_PIN = "123456";
 
   function setAdminStep(step) {
     if (stepLogin) stepLogin.classList.add('hidden');
-    if (step2FA) step2FA.classList.add('hidden');
     if (stepPanel) stepPanel.classList.add('hidden');
 
     if (step === 1 && stepLogin) stepLogin.classList.remove('hidden');
-    if (step === 2 && step2FA) step2FA.classList.remove('hidden');
-    if (step === 3 && stepPanel) stepPanel.classList.remove('hidden');
+    if (step === 2 && stepPanel) stepPanel.classList.remove('hidden');
   }
 
   function setAdminStatus(msg, type = 'normal') {
@@ -877,19 +869,13 @@ document.addEventListener('DOMContentLoaded', () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         authenticatedUser = user;
-        if (userEmailDisplay) userEmailDisplay.textContent = user.email;
         if (adminUserName) adminUserName.textContent = user.displayName || user.email;
 
-        if (is2FAPassed) {
-          setAdminStep(3);
-          renderAdminProjectsList(currentProjects);
-        } else {
-          setAdminStep(2);
-          setAdminStatus("Etapa 1 concluída (Google Auth). Insira seu PIN 2FA.", "success");
-        }
+        setAdminStep(2);
+        setAdminStatus(`Autenticado com sucesso como ${user.displayName || user.email}`, "success");
+        renderAdminProjectsList(currentProjects);
       } else {
         authenticatedUser = null;
-        is2FAPassed = false;
         setAdminStep(1);
         setAdminStatus("Aguardando login com a conta Google...", "normal");
       }
@@ -902,10 +888,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!firebaseInitialized || !auth || !googleProvider) {
         // Modo Simulação/Modo Sem Firebase
         authenticatedUser = { email: "admin@henrikbispo.com", displayName: "Henrik Bispo" };
-        if (userEmailDisplay) userEmailDisplay.textContent = authenticatedUser.email;
         if (adminUserName) adminUserName.textContent = authenticatedUser.displayName;
         setAdminStep(2);
-        setAdminStatus("Modo Simulação: Faça a verificação 2FA (PIN padrão: 123456)", "yellow");
+        setAdminStatus("Modo Simulação: Logado como Henrik Bispo", "success");
+        renderAdminProjectsList(currentProjects);
         return;
       }
 
@@ -920,24 +906,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2. Verificação de Duas Etapas (2FA PIN)
-  if (btnVerify2FA) {
-    btnVerify2FA.addEventListener('click', () => {
-      const pinValue = input2FAPin ? input2FAPin.value.trim() : '';
-
-      if (pinValue === ADMIN_2FA_PIN) {
-        is2FAPassed = true;
-        playSaveSound();
-        setAdminStep(3);
-        setAdminStatus("Autenticação de 2 Etapas bem-sucedida! Bem-vindo.", "success");
-        renderAdminProjectsList(currentProjects);
-      } else {
-        playHitSound();
-        setAdminStatus("PIN de 2 Etapas incorreto! Tente novamente.", "error");
-      }
-    });
-  }
-
   // Logout
   if (btnLogoutAdmin) {
     btnLogoutAdmin.addEventListener('click', async () => {
@@ -945,8 +913,6 @@ document.addEventListener('DOMContentLoaded', () => {
         await signOut(auth);
       }
       authenticatedUser = null;
-      is2FAPassed = false;
-      if (input2FAPin) input2FAPin.value = '';
       setAdminStep(1);
       setAdminStatus("Sessão encerrada.", "normal");
     });
@@ -957,8 +923,8 @@ document.addEventListener('DOMContentLoaded', () => {
     formAddProject.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      if (!is2FAPassed) {
-        setAdminStatus("Acesso negado. Conclua a autenticação 2FA.", "error");
+      if (!authenticatedUser) {
+        setAdminStatus("Acesso negado. Faça login com a conta Google.", "error");
         return;
       }
 
