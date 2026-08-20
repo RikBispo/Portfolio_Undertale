@@ -688,7 +688,7 @@ document.addEventListener('DOMContentLoaded', () => {
       icon: '💅',
       title: 'Carolunhas Landing Page',
       description: '* Landing Page desenvolvida para um empreendimento de beleza, expandindo a presença digital da cliente e otimizando a captação e agendamento de clientes online.',
-      tags: ['WEB DESIGN', 'RENDER'],
+      tags: ['WEB DESIGN', 'FIREBASE HOSTING'],
       link: 'https://carolunhas.onrender.com',
       highlight: true
     },
