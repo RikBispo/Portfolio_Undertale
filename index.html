@@ -46,6 +46,9 @@
         <button id="btn-battle-mode" class="ut-btn-small highlight pulse-btn" title="Entrar na Batalha Real de Undertale!">
           ⚔️ INICIAR BATALHA UNDERTALE
         </button>
+        <button id="btn-open-admin" class="ut-btn-small yellow" title="Painel de Administração do Firebase">
+          ⚙️ ADMIN
+        </button>
       </div>
     </div>
   </header>
@@ -533,17 +536,101 @@
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="ut-footer">
-    <div class="ut-footer-content">
-      <p>© 2005 - 2026 HENRIK BISPO --- UNDERTALE THEMED PORTFOLIO</p>
-      <div class="footer-links">
-        <a href="https://www.linkedin.com/in/rikbispo" target="_blank" rel="noopener noreferrer">[ LINKEDIN ]</a>
-        <a href="https://github.com/RikBispo" target="_blank" rel="noopener noreferrer">[ GITHUB ]</a>
+  <!-- ==========================================================================
+       UNDERTALE ADMIN & PROJECTS MANAGER MODAL (FIREBASE + GOOGLE AUTH + 2FA)
+       ========================================================================== -->
+  <div id="admin-modal" class="ut-modal hidden">
+    <div class="ut-box admin-modal-box">
+      <div class="popup-header">
+        <span class="text-yellow">* GERENCIADOR DE PROJETOS (FIREBASE ADMIN)</span>
+        <button id="btn-close-admin" class="popup-close-btn">✕</button>
       </div>
-    </div>
-  </footer>
 
-  <script src="script.js"></script>
+      <!-- STEP 1: GOOGLE LOGIN -->
+      <div id="admin-step-login" class="admin-step">
+        <p class="admin-intro-text">* Faça login com sua conta do Google para validar a permissão de administrador.</p>
+        <div class="admin-action-center">
+          <button id="btn-google-login" class="ut-btn-action yellow">
+            <span>🔑 ENTRAR COM O GOOGLE</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2: TWO-FACTOR AUTHENTICATION (2FA / PIN) -->
+      <div id="admin-step-2fa" class="admin-step hidden">
+        <p class="admin-intro-text">* <span class="text-green">Conta identificada:</span> <span id="user-email-display"></span></p>
+        <p class="admin-intro-text">* Insira a senha/PIN de segurança de 2 Etapas para confirmar sua identidade:</p>
+        
+        <div class="admin-form-group">
+          <label for="admin-2fa-pin">* CÓDIGO PIN (2FA):</label>
+          <input type="password" id="admin-2fa-pin" maxlength="6" placeholder="******" class="ut-input-pixel">
+        </div>
+
+        <div class="admin-action-center">
+          <button id="btn-verify-2fa" class="ut-btn-action text-cyan">
+            <span>🛡️ CONFIRMAR 2FA</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3: MANAGE PROJECTS PANEL (ADD / REMOVE) -->
+      <div id="admin-step-panel" class="admin-step hidden">
+        <div class="admin-user-bar">
+          <span>❤️ Admin: <strong id="admin-user-name" class="text-yellow"></strong></span>
+          <button id="btn-logout-admin" class="ut-btn-small">Sair</button>
+        </div>
+
+        <!-- FORM: NEW PROJECT -->
+        <form id="form-add-project" class="ut-form admin-form">
+          <h3 class="form-title">* ADICIONAR NOVO PROJETO</h3>
+
+          <div class="admin-grid-inputs">
+            <div class="form-group">
+              <label for="p-title">* TÍTULO DO PROJETO:</label>
+              <input type="text" id="p-title" required placeholder="Ex: Meu Novo Robô IA" class="ut-input-pixel">
+            </div>
+
+            <div class="form-group">
+              <label for="p-icon">* ÍCONE / EMOJI:</label>
+              <input type="text" id="p-icon" required placeholder="Ex: 🤖, 🚀, 💻" class="ut-input-pixel">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="p-desc">* DESCRIÇÃO:</label>
+            <textarea id="p-desc" rows="3" required placeholder="Descrição do projeto..." class="ut-input-pixel"></textarea>
+          </div>
+
+          <div class="admin-grid-inputs">
+            <div class="form-group">
+              <label for="p-tags">* TAGS (separadas por vírgula):</label>
+              <input type="text" id="p-tags" required placeholder="Ex: PYTHON, ML, FIREBASE" class="ut-input-pixel">
+            </div>
+
+            <div class="form-group">
+              <label for="p-link">* LINK DO SITE / GITHUB (Opcional):</label>
+              <input type="url" id="p-link" placeholder="https://..." class="ut-input-pixel">
+            </div>
+          </div>
+
+          <button type="submit" class="ut-btn-action yellow full-width">
+            <span>🌟 SALVAR E PUBLICAR PROJETO</span>
+          </button>
+        </form>
+
+        <!-- LIST: CURRENT PROJECTS WITH DELETE BUTTON -->
+        <div class="admin-projects-list-wrapper">
+          <h3 class="form-title">* GERENCIAR PROJETOS EXISTENTES</h3>
+          <div id="admin-projects-list" class="admin-projects-list">
+            <!-- Projetos serão renderizados dinamicamente aqui com botão de excluir -->
+          </div>
+        </div>
+      </div>
+
+      <div id="admin-status-msg" class="status-msg center">* Aguardando ação...</div>
+    </div>
+  </div>
+
+  <script type="module" src="script.js"></script>
 </body>
 </html>

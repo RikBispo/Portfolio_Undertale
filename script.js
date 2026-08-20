@@ -2,6 +2,22 @@
    UNDERTALE PORTFOLIO - FAITHFUL UNDERTALE BATTLE CONTROLLER & ENGINE
    ========================================================================== */
 
+import { 
+  auth, 
+  db, 
+  googleProvider, 
+  firebaseInitialized, 
+  signInWithPopup, 
+  signOut, 
+  onAuthStateChanged,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  serverTimestamp
+} from './firebase-config.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // ==========================================
@@ -650,6 +666,364 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       contactForm.reset();
     });
+  }
+
+
+  // ==========================================
+  // 5. DYNAMIC PROJECTS ENGINE & FIREBASE ADMIN (GOOGLE AUTH + 2FA)
+  // ==========================================
+  
+  // Lista Padrão de Projetos (Fallback se o Firebase não estiver configurado)
+  const defaultProjects = [
+    {
+      id: 'default-1',
+      icon: '🏆',
+      title: 'INTERFATECS - Maratona C',
+      description: '* Participante do Interfatecs (Maratona de Programação) com a equipe PHP.atos. Classificação e avanço até a 2ª etapa nacional exercitando algoritmos avançados e raciocínio lógico em Linguagem C.',
+      tags: ['LINGUAGEM C', 'MARATONA', 'LÓGICA'],
+      highlight: false
+    },
+    {
+      id: 'default-2',
+      icon: '💅',
+      title: 'Carolunhas Landing Page',
+      description: '* Landing Page desenvolvida para um empreendimento de beleza, expandindo a presença digital da cliente e otimizando a captação e agendamento de clientes online.',
+      tags: ['WEB DESIGN', 'RENDER'],
+      link: 'https://carolunhas.onrender.com',
+      highlight: true
+    },
+    {
+      id: 'default-3',
+      icon: '🏛️',
+      title: 'Patrimonial Management System',
+      description: '* Projeto acadêmico na FATEC focado no desenvolvimento de um sistema de gestão de patrimônio. Atuação direta na documentação técnica, modelagem e estrutura de requisitos em C#.',
+      tags: ['C#', 'DOCUMENTAÇÃO', 'FATEC'],
+      highlight: false
+    },
+    {
+      id: 'default-4',
+      icon: '🤝',
+      title: 'HAVANA - Gestão Social',
+      description: '* Plataforma desenvolvida no Projeto Integrador para inclusão de jovens de escolas públicas em oficinas de esporte e cultura, com módulo de cadastro e gerador de carteirinhas de estudantes.',
+      tags: ['IMPACTO SOCIAL', 'CADASTRO', 'I.D'],
+      highlight: false
+    }
+  ];
+
+  let currentProjects = [...defaultProjects];
+  const projectsGrid = document.querySelector('.ut-projects-grid');
+  const adminProjectsList = document.getElementById('admin-projects-list');
+
+  // Função para renderizar os projetos no Grid do Portfólio
+  function renderProjects(projects) {
+    if (!projectsGrid) return;
+    projectsGrid.innerHTML = '';
+
+    projects.forEach(p => {
+      const card = document.createElement('div');
+      card.className = `ut-box project-card ${p.highlight ? 'highlight-border' : ''}`;
+      
+      const tagsHtml = p.tags && Array.isArray(p.tags) 
+        ? p.tags.map(t => `<span class="tag">${t.trim()}</span>`).join(' ') 
+        : '';
+
+      const linkHtml = p.link ? `
+        <a href="${p.link}" target="_blank" rel="noopener noreferrer" class="ut-link-btn">
+          🔗 Visitar Site
+        </a>
+      ` : '';
+
+      card.innerHTML = `
+        <div class="project-header">
+          <span class="project-icon">${p.icon || '🚀'}</span>
+          <h3>${p.title}</h3>
+        </div>
+        <p class="project-body">${p.description}</p>
+        <div class="project-footer space-between">
+          <div class="tag-list">${tagsHtml}</div>
+          ${linkHtml}
+        </div>
+      `;
+
+      projectsGrid.appendChild(card);
+    });
+  }
+
+  // Função para renderizar a lista no Painel de Admin (com botão de exclusão)
+  function renderAdminProjectsList(projects) {
+    if (!adminProjectsList) return;
+    adminProjectsList.innerHTML = '';
+
+    if (projects.length === 0) {
+      adminProjectsList.innerHTML = '<p class="admin-intro-text">* Nenhum projeto cadastrado.</p>';
+      return;
+    }
+
+    projects.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'admin-project-item';
+      item.innerHTML = `
+        <div class="admin-project-item-info">
+          <h4>${p.icon || '🚀'} ${p.title}</h4>
+          <p>${p.description ? p.description.substring(0, 70) + '...' : ''}</p>
+        </div>
+        <button class="btn-delete-project" data-id="${p.id}">
+          🗑️ EXCLUIR
+        </button>
+      `;
+
+      const deleteBtn = item.querySelector('.btn-delete-project');
+      deleteBtn.addEventListener('click', () => handleDeleteProject(p.id, p.title));
+
+      adminProjectsList.appendChild(item);
+    });
+  }
+
+  // Inicializar escuta em tempo real do Firebase Firestore
+  if (firebaseInitialized && db) {
+    try {
+      const projetosRef = collection(db, 'projetos');
+      onSnapshot(projetosRef, (snapshot) => {
+        const fetchedProjects = [];
+        snapshot.forEach((docSnap) => {
+          fetchedProjects.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        if (fetchedProjects.length > 0) {
+          currentProjects = fetchedProjects;
+        } else {
+          currentProjects = [...defaultProjects];
+        }
+
+        renderProjects(currentProjects);
+        renderAdminProjectsList(currentProjects);
+      }, (err) => {
+        console.error("Erro no Firestore Listener:", err);
+        renderProjects(defaultProjects);
+        renderAdminProjectsList(defaultProjects);
+      });
+    } catch (e) {
+      renderProjects(defaultProjects);
+    }
+  } else {
+    // Caso o Firebase não esteja configurado, renderiza os projetos padrão
+    renderProjects(defaultProjects);
+  }
+
+  // --- LÓGICA DO MODAL ADMIN & AUTENTICAÇÃO GOOGLE 2FA ---
+  const btnOpenAdmin = document.getElementById('btn-open-admin');
+  const btnCloseAdmin = document.getElementById('btn-close-admin');
+  const adminModal = document.getElementById('admin-modal');
+
+  const stepLogin = document.getElementById('admin-step-login');
+  const step2FA = document.getElementById('admin-step-2fa');
+  const stepPanel = document.getElementById('admin-step-panel');
+
+  const btnGoogleLogin = document.getElementById('btn-google-login');
+  const btnVerify2FA = document.getElementById('btn-verify-2fa');
+  const btnLogoutAdmin = document.getElementById('btn-logout-admin');
+
+  const input2FAPin = document.getElementById('admin-2fa-pin');
+  const userEmailDisplay = document.getElementById('user-email-display');
+  const adminUserName = document.getElementById('admin-user-name');
+  const adminStatusMsg = document.getElementById('admin-status-msg');
+  const formAddProject = document.getElementById('form-add-project');
+
+  let authenticatedUser = null;
+  let is2FAPassed = false;
+  // PIN de segurança padrão de 2 Etapas (Pode ser alterado)
+  const ADMIN_2FA_PIN = "123456";
+
+  function setAdminStep(step) {
+    if (stepLogin) stepLogin.classList.add('hidden');
+    if (step2FA) step2FA.classList.add('hidden');
+    if (stepPanel) stepPanel.classList.add('hidden');
+
+    if (step === 1 && stepLogin) stepLogin.classList.remove('hidden');
+    if (step === 2 && step2FA) step2FA.classList.remove('hidden');
+    if (step === 3 && stepPanel) stepPanel.classList.remove('hidden');
+  }
+
+  function setAdminStatus(msg, type = 'normal') {
+    if (!adminStatusMsg) return;
+    if (type === 'error') {
+      adminStatusMsg.innerHTML = `<span class="text-red">* ${msg}</span>`;
+    } else if (type === 'success') {
+      adminStatusMsg.innerHTML = `<span class="text-green">* ${msg}</span>`;
+    } else {
+      adminStatusMsg.innerHTML = `<span class="text-yellow">* ${msg}</span>`;
+    }
+  }
+
+  if (btnOpenAdmin && adminModal) {
+    btnOpenAdmin.addEventListener('click', () => {
+      adminModal.classList.remove('hidden');
+      playSaveSound();
+
+      if (!firebaseInitialized) {
+        setAdminStatus("Aviso: Configure suas credenciais em firebase-config.js para salvar na nuvem.", "error");
+      }
+    });
+  }
+
+  if (btnCloseAdmin && adminModal) {
+    btnCloseAdmin.addEventListener('click', () => {
+      adminModal.classList.add('hidden');
+    });
+  }
+
+  // Monitorar Estado de Autenticação no Firebase
+  if (firebaseInitialized && auth) {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        authenticatedUser = user;
+        if (userEmailDisplay) userEmailDisplay.textContent = user.email;
+        if (adminUserName) adminUserName.textContent = user.displayName || user.email;
+
+        if (is2FAPassed) {
+          setAdminStep(3);
+          renderAdminProjectsList(currentProjects);
+        } else {
+          setAdminStep(2);
+          setAdminStatus("Etapa 1 concluída (Google Auth). Insira seu PIN 2FA.", "success");
+        }
+      } else {
+        authenticatedUser = null;
+        is2FAPassed = false;
+        setAdminStep(1);
+        setAdminStatus("Aguardando login com a conta Google...", "normal");
+      }
+    });
+  }
+
+  // 1. Google Sign-In
+  if (btnGoogleLogin) {
+    btnGoogleLogin.addEventListener('click', async () => {
+      if (!firebaseInitialized || !auth || !googleProvider) {
+        // Modo Simulação/Modo Sem Firebase
+        authenticatedUser = { email: "admin@henrikbispo.com", displayName: "Henrik Bispo" };
+        if (userEmailDisplay) userEmailDisplay.textContent = authenticatedUser.email;
+        if (adminUserName) adminUserName.textContent = authenticatedUser.displayName;
+        setAdminStep(2);
+        setAdminStatus("Modo Simulação: Faça a verificação 2FA (PIN padrão: 123456)", "yellow");
+        return;
+      }
+
+      try {
+        setAdminStatus("Abrindo popup do Google...", "yellow");
+        await signInWithPopup(auth, googleProvider);
+        playSelectSound();
+      } catch (err) {
+        console.error("Erro no Google Auth:", err);
+        setAdminStatus(`Erro no login Google: ${err.message}`, "error");
+      }
+    });
+  }
+
+  // 2. Verificação de Duas Etapas (2FA PIN)
+  if (btnVerify2FA) {
+    btnVerify2FA.addEventListener('click', () => {
+      const pinValue = input2FAPin ? input2FAPin.value.trim() : '';
+
+      if (pinValue === ADMIN_2FA_PIN) {
+        is2FAPassed = true;
+        playSaveSound();
+        setAdminStep(3);
+        setAdminStatus("Autenticação de 2 Etapas bem-sucedida! Bem-vindo.", "success");
+        renderAdminProjectsList(currentProjects);
+      } else {
+        playHitSound();
+        setAdminStatus("PIN de 2 Etapas incorreto! Tente novamente.", "error");
+      }
+    });
+  }
+
+  // Logout
+  if (btnLogoutAdmin) {
+    btnLogoutAdmin.addEventListener('click', async () => {
+      if (firebaseInitialized && auth) {
+        await signOut(auth);
+      }
+      authenticatedUser = null;
+      is2FAPassed = false;
+      if (input2FAPin) input2FAPin.value = '';
+      setAdminStep(1);
+      setAdminStatus("Sessão encerrada.", "normal");
+    });
+  }
+
+  // Adicionar Novo Projeto
+  if (formAddProject) {
+    formAddProject.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!is2FAPassed) {
+        setAdminStatus("Acesso negado. Conclua a autenticação 2FA.", "error");
+        return;
+      }
+
+      const title = document.getElementById('p-title').value.trim();
+      const icon = document.getElementById('p-icon').value.trim() || '🚀';
+      const description = document.getElementById('p-desc').value.trim();
+      const tagsString = document.getElementById('p-tags').value.trim();
+      const link = document.getElementById('p-link').value.trim();
+
+      const tagsArray = tagsString ? tagsString.split(',').map(t => t.trim()) : [];
+
+      const newProject = {
+        title,
+        icon,
+        description: `* ${description}`,
+        tags: tagsArray,
+        link: link || null,
+        highlight: false,
+        createdAt: serverTimestamp ? serverTimestamp() : new Date()
+      };
+
+      try {
+        if (firebaseInitialized && db) {
+          setAdminStatus("Salvando projeto no Firebase...", "yellow");
+          await addDoc(collection(db, "projetos"), newProject);
+          setAdminStatus("Projeto adicionado com sucesso ao Firestore!", "success");
+        } else {
+          // Fallback Local
+          const localProject = { id: `local-${Date.now()}`, ...newProject };
+          currentProjects.unshift(localProject);
+          renderProjects(currentProjects);
+          renderAdminProjectsList(currentProjects);
+          setAdminStatus("Projeto adicionado localmente! (Configure firebase-config.js para sincronizar)", "success");
+        }
+
+        playSaveSound();
+        formAddProject.reset();
+      } catch (err) {
+        console.error("Erro ao salvar projeto:", err);
+        setAdminStatus(`Erro ao salvar: ${err.message}`, "error");
+      }
+    });
+  }
+
+  // Função para deletar um projeto
+  async function handleDeleteProject(id, title) {
+    if (!confirm(`Deseja realmente remover o projeto "${title}"?`)) return;
+
+    try {
+      if (firebaseInitialized && db && !id.startsWith('default-') && !id.startsWith('local-')) {
+        setAdminStatus("Removendo projeto do Firebase...", "yellow");
+        await deleteDoc(doc(db, "projetos", id));
+        setAdminStatus(`Projeto "${title}" removido do Firestore!`, "success");
+      } else {
+        // Fallback Local
+        currentProjects = currentProjects.filter(p => p.id !== id);
+        renderProjects(currentProjects);
+        renderAdminProjectsList(currentProjects);
+        setAdminStatus(`Projeto "${title}" removido!`, "success");
+      }
+      playHitSound();
+    } catch (err) {
+      console.error("Erro ao remover projeto:", err);
+      setAdminStatus(`Erro ao remover: ${err.message}`, "error");
+    }
   }
 
 });
