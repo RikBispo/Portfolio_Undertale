@@ -816,7 +816,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const adminModal = document.getElementById('admin-modal');
 
   const stepLogin = document.getElementById('admin-step-login');
-  const step2FA = document.getElementById('admin-step-2fa');
   const stepPanel = document.getElementById('admin-step-panel');
 
   const btnGoogleLogin = document.getElementById('btn-google-login');
